@@ -166,7 +166,7 @@
 		#define aret(n) a1(ret n)
 	#endif
 	#define asm_naked_fn_end(fn) ".att_syntax prefix;\n" );
-	#define asm_naked_fn_proto(type, fn) extern type asm_calling_convention fn
+	#define asm_naked_fn_proto(type, fn) extern "C" type asm_calling_convention fn
 	#define asm_naked_fn(fn) ; __asm__ (".intel_syntax noprefix;\n.text\n" asm_align16 GNU_ASFN(fn)
 
 	#define asm_gcc() __asm__ __volatile__(".intel_syntax noprefix;\n"
