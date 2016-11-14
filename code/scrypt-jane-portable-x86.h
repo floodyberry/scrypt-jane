@@ -109,22 +109,22 @@
 #if defined(X86_INTRINSIC_SSE2)
 	typedef union packedelem8_t {
 		uint8_t u[16];
-		xmmi v;	
+		xmmi v;
 	} packedelem8;
 
 	typedef union packedelem32_t {
 		uint32_t u[4];
-		xmmi v;	
+		xmmi v;
 	} packedelem32;
 
 	typedef union packedelem64_t {
 		uint64_t u[2];
-		xmmi v;	
+		xmmi v;
 	} packedelem64;
 #else
 	typedef union packedelem8_t {
 		uint8_t u[16];
-		uint32_t dw[4];		
+		uint32_t dw[4];
 	} packedelem8;
 
 	typedef union packedelem32_t {
@@ -189,7 +189,9 @@
 	#define asm_align8 ".p2align 3,,7"
 	#define asm_align16 ".p2align 4,,15"
 
-	#if defined(OS_WINDOWS)
+	// Cygwin is detected as OS_NIX which is kinda true,
+	//   but it still requires Windows-like naked assmebly definitions
+	#if defined(OS_WINDOWS) || defined(__CYGWIN__)
 		#define asm_calling_convention CDECL
 		#define aret(n) a1(ret)
 
@@ -231,7 +233,7 @@
 		#endif
 	#else
 		#define asm_calling_convention STDCALL
-		#define aret(n) a1(ret n)		
+		#define aret(n) a1(ret n)
 		#define asm_naked_fn(fn) ; __asm__ (".intel_syntax noprefix;\n.text\n" asm_align16 GNU_ASFN(fn)
 	#endif
 
@@ -366,7 +368,7 @@ detect_cpu(void) {
 		vendor = cpu_intel;
 	else if (scrypt_verify(vendor_string.s, (const uint8_t *)"AuthenticAMD", 12))
 		vendor = cpu_amd;
-	
+
 	if (max_level & 0x00000500) {
 		/* "Intel P5 pre-B0" */
 		cpu_flags |= cpu_mmx;
