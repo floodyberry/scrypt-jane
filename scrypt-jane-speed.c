@@ -31,9 +31,11 @@ get_ticks(void) {
 	__asm__ __volatile__("mov %0=ar.itc" : "=r" (t));
 	return t;
 #elif defined(OS_NIX)
-	timeval t2;
-	gettimeofday(&t2, NULL);
-	t = ((uint64_t)t2.tv_usec << 32) | (uint64_t)t2.tv_sec;
+	#include <sys/time.h>
+	struct timeval t2;
+	if (gettimeofday(&t2, NULL))
+		return 0;
+	uint64_t t = (uint64_t)t2.tv_sec * 1000000 + t2.tv_usec;
 	return t;
 #else
 	need ticks for this platform
@@ -95,10 +97,13 @@ int main(void) {
 		for (i = 0; settings[i].desc; i++) {
 			s = &settings[i];
 			minticks = maxticks;
-			for (passes = 0; passes < 16; passes++)
+			uint64_t allticks = 0;
+			for (passes = 0; passes < 16; passes++) {
 				timeit(scrypt(password, sizeof(password), salt, sizeof(salt), s->Nfactor, s->rfactor, s->pfactor, digest, sizeof(digest)), minticks)
+				allticks += ticks;
+			}
 
-			printf("%s, %.0f ticks\n", s->desc, (double)minticks);
+			printf("%s, %.0f min ticks, %.0f avg ticks\n", s->desc, (double)minticks, (double)allticks / passes);
 		}
 
 	#if defined(SCRYPT_CHOOSE_COMPILETIME)
