@@ -97,10 +97,13 @@ int main(void) {
 		for (i = 0; settings[i].desc; i++) {
 			s = &settings[i];
 			minticks = maxticks;
-			for (passes = 0; passes < 16; passes++)
+			uint64_t allticks = 0;
+			for (passes = 0; passes < 16; passes++) {
 				timeit(scrypt(password, sizeof(password), salt, sizeof(salt), s->Nfactor, s->rfactor, s->pfactor, digest, sizeof(digest)), minticks)
+				allticks += ticks;
+			}
 
-			printf("%s, %.0f ticks\n", s->desc, (double)minticks);
+			printf("%s, %.0f min ticks, %.0f avg ticks\n", s->desc, (double)minticks, (double)allticks / passes);
 		}
 
 	#if defined(SCRYPT_CHOOSE_COMPILETIME)
