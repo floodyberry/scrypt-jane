@@ -31,9 +31,11 @@ get_ticks(void) {
 	__asm__ __volatile__("mov %0=ar.itc" : "=r" (t));
 	return t;
 #elif defined(OS_NIX)
-	timeval t2;
-	gettimeofday(&t2, NULL);
-	t = ((uint64_t)t2.tv_usec << 32) | (uint64_t)t2.tv_sec;
+	#include <sys/time.h>
+	struct timeval t2;
+	if (gettimeofday(&t2, NULL))
+		return 0;
+	uint64_t t = (uint64_t)t2.tv_sec * 1000000 + t2.tv_usec;
 	return t;
 #else
 	need ticks for this platform
