@@ -140,9 +140,11 @@ clang *may* need "-no-integrated-as" as some? versions don't support ".intel_syn
 
 # Using
 
-    #include "scrypt-jane.h"
+```c
+#include "scrypt-jane.h"
 
-    scrypt(password, password_len, salt, salt_len, Nfactor, pfactor, rfactor, out, want_bytes);
+scrypt(password, password_len, salt, salt_len, Nfactor, pfactor, rfactor, out, want_bytes);
+```
 
 ## scrypt parameters
 
